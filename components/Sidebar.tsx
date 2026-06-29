@@ -77,7 +77,7 @@ export default function Sidebar() {
         color: 'var(--text-muted)',
         fontSize: '11px',
       }}>
-        devpocket.tech
+        devpocket-jet.vercel.app
       </div>
     </aside>
   );
