@@ -1,124 +1,200 @@
 'use client';
 
-import Link from 'next/link';
-import { Terminal, FileText, GitCommit, ArrowRight, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { FileText, Copy, Check, Loader2 } from 'lucide-react';
 
-const sections = [
-  {
-    category: '🐞 Debug',
-    tools: [
-      { name: 'Error Explainer', desc: 'Paste any error. Get plain English explanation + fix.', path: '/tools/error-explainer', tag: 'debugging', live: true },
-    ],
-    coming: ['Docker Error Explainer', 'Stack Trace Explainer'],
-  },
-  {
-    category: '📝 Document',
-    tools: [
-      { name: 'README Generator', desc: 'Generate a professional README.md in seconds.', path: '/tools/readme', tag: 'documentation', live: true },
-    ],
-    coming: ['API Docs Generator'],
-  },
-  {
-    category: '🌿 Git',
-    tools: [
-      { name: 'Commit Message AI', desc: 'Turn your git diff into 5 perfect commit messages.', path: '/tools/commit-msg', tag: 'git', live: true },
-    ],
-    coming: ['PR Description Generator', 'Gitignore Generator'],
-  },
-  {
-    category: '🛠 Utilities',
-    tools: [],
-    coming: ['JSON Formatter', 'JWT Decoder', 'UUID Generator', 'Base64 Encode/Decode'],
-  },
-];
+export default function ReadmeGenerator() {
+  const [form, setForm] = useState({
+    projectName: '',
+    description: '',
+    techStack: '',
+    features: '',
+    installation: '',
+    usage: '',
+  });
+  const [result, setResult] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [error, setError] = useState('');
+  const [tab, setTab] = useState<'raw' | 'preview'>('raw');
 
-const icons: Record<string, React.ElementType> = {
-  'Error Explainer': Terminal,
-  'README Generator': FileText,
-  'Commit Message AI': GitCommit,
-};
+  const generate = async () => {
+    if (!form.projectName || !form.description) return;
+    setLoading(true);
+    setError('');
+    setResult('');
 
-export default function Home() {
+    try {
+      const res = await fetch('/api/readme', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (data.readme) setResult(data.readme);
+      else setError('Failed to generate. Try again.');
+    } catch {
+      setError('Something went wrong. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copy = () => {
+    navigator.clipboard.writeText(result);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const fields = [
+    { key: 'projectName', label: 'Project Name *', placeholder: 'e.g. DevPocket' },
+    { key: 'description', label: 'Description *', placeholder: 'What does your project do?' },
+    { key: 'techStack', label: 'Tech Stack', placeholder: 'e.g. Next.js, Tailwind, Groq API' },
+    { key: 'features', label: 'Key Features', placeholder: 'e.g. AI error explainer, commit message generator' },
+    { key: 'installation', label: 'Installation Steps', placeholder: 'e.g. npm install, npm run dev' },
+    { key: 'usage', label: 'Usage', placeholder: 'How do users use it?' },
+  ];
+
   return (
-    <div style={{ padding: '48px 40px', maxWidth: '860px' }}>
-      {/* Hero */}
-      <div style={{ marginBottom: '52px' }}>
-        <p style={{ color: 'var(--accent)', fontSize: '13px', marginBottom: '12px', letterSpacing: '2px' }}>
-          &gt;_ DEVELOPER TOOLKIT
-        </p>
-        <h1 style={{ fontSize: '36px', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: '16px' }}>
-          The AI workspace<br />
-          <span style={{ color: 'var(--accent)' }}>for developers.</span>
+    <div style={{ padding: '48px 40px', maxWidth: '800px' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+          <FileText size={20} color="var(--accent)" />
+          <p style={{ color: 'var(--accent)', fontSize: '13px', letterSpacing: '2px' }}>DOCUMENTATION TOOL</p>
+        </div>
+        <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+          README Generator
         </h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '15px', maxWidth: '520px', lineHeight: 1.7 }}>
-          Debug errors, generate documentation, and ship code faster. Free developer tools, no sign-up required.
+        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+          Fill in the details → get a professional README.md instantly.
         </p>
       </div>
 
-      {/* Sections */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        {sections.map((section) => (
-          <div key={section.category}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '12px', letterSpacing: '2px', marginBottom: '14px' }}>
-              {section.category}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+        {fields.map(({ key, label, placeholder }) => (
+          <div key={key}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '11px', letterSpacing: '1px', marginBottom: '6px' }}>
+              {label.toUpperCase()}
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {/* Live tools */}
-              {section.tools.map((tool) => {
-                const Icon = icons[tool.name] || Terminal;
-                return (
-                  <Link key={tool.path} href={tool.path} style={{ textDecoration: 'none' }}>
-                    <div
-                      style={{
-                        background: 'var(--bg-secondary)',
-                        border: '1px solid var(--border)',
-                        borderRadius: '8px',
-                        padding: '20px 24px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        transition: 'border-color 0.2s',
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
-                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <Icon size={18} color="var(--accent)" />
-                        <div>
-                          <p style={{ color: 'var(--text-primary)', fontSize: '14px', fontWeight: 600, marginBottom: '2px' }}>{tool.name}</p>
-                          <p style={{ color: 'var(--text-muted)', fontSize: '12px' }}>{tool.desc}</p>
-                        </div>
-                      </div>
-                      <ArrowRight size={14} color="var(--accent)" />
-                    </div>
-                  </Link>
-                );
-              })}
-
-              {/* Coming soon */}
-              {section.coming.map((name) => (
-                <div key={name} style={{
-                  background: 'var(--bg-secondary)',
-                  border: '1px dashed var(--border)',
-                  borderRadius: '8px',
-                  padding: '14px 24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  opacity: 0.5,
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <Clock size={16} color="var(--text-muted)" />
-                    <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>{name}</p>
-                  </div>
-                  <span style={{ color: 'var(--text-muted)', fontSize: '10px', letterSpacing: '1px' }}>COMING SOON</span>
-                </div>
-              ))}
-            </div>
+            <textarea
+              value={form[key as keyof typeof form]}
+              onChange={e => setForm({ ...form, [key]: e.target.value })}
+              placeholder={placeholder}
+              rows={2}
+              style={{
+                width: '100%',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                color: 'var(--text-primary)',
+                fontSize: '13px',
+                fontFamily: 'JetBrains Mono, monospace',
+                resize: 'vertical',
+                outline: 'none',
+              }}
+              onFocus={e => (e.target.style.borderColor = 'var(--accent)')}
+              onBlur={e => (e.target.style.borderColor = 'var(--border)')}
+            />
           </div>
         ))}
       </div>
+
+      <button
+        onClick={generate}
+        disabled={loading || !form.projectName || !form.description}
+        style={{
+          background: loading || !form.projectName || !form.description ? 'var(--bg-tertiary)' : 'var(--accent)',
+          color: loading || !form.projectName || !form.description ? 'var(--text-muted)' : '#000',
+          border: 'none',
+          borderRadius: '6px',
+          padding: '12px 24px',
+          fontSize: '13px',
+          fontWeight: 600,
+          fontFamily: 'JetBrains Mono, monospace',
+          cursor: loading || !form.projectName || !form.description ? 'not-allowed' : 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '32px',
+        }}
+      >
+        {loading ? <><Loader2 size={16} /> Generating...</> : '>_ Generate README'}
+      </button>
+
+      {error && <p style={{ color: '#ff4444', fontSize: '13px', marginBottom: '16px' }}>{error}</p>}
+
+      {result && (
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {(['raw', 'preview'] as const).map(t => (
+                <button key={t} onClick={() => setTab(t)} style={{
+                  background: tab === t ? 'var(--accent-dim)' : 'transparent',
+                  border: `1px solid ${tab === t ? 'var(--accent)' : 'var(--border)'}`,
+                  borderRadius: '4px',
+                  padding: '6px 14px',
+                  color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
+                  fontSize: '12px',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  cursor: 'pointer',
+                }}>
+                  {t.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            <button onClick={copy} style={{
+              background: 'transparent',
+              border: '1px solid var(--border)',
+              borderRadius: '4px',
+              padding: '6px 12px',
+              color: copied ? 'var(--accent)' : 'var(--text-muted)',
+              fontSize: '12px',
+              fontFamily: 'JetBrains Mono, monospace',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}>
+              {copied ? <Check size={12} /> : <Copy size={12} />}
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+
+          {tab === 'raw' ? (
+            <textarea
+              readOnly
+              value={result}
+              rows={20}
+              style={{
+                width: '100%',
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border)',
+                borderRadius: '8px',
+                padding: '16px',
+                color: 'var(--text-primary)',
+                fontSize: '13px',
+                fontFamily: 'JetBrains Mono, monospace',
+                resize: 'vertical',
+                outline: 'none',
+              }}
+            />
+          ) : (
+            <div style={{
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              padding: '24px',
+              color: 'var(--text-primary)',
+              fontSize: '14px',
+              lineHeight: 1.7,
+              whiteSpace: 'pre-wrap',
+            }}>
+              {result}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
