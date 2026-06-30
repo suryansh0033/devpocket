@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Terminal, FileText, GitCommit, Home, ChevronRight, Menu, X } from 'lucide-react';
+import { Terminal, FileText, GitCommit, GitPullRequest, Home, ChevronRight, Menu, X } from 'lucide-react';
 import { SiGithub } from '@icons-pack/react-simple-icons';
 import { useState } from 'react';
 
@@ -11,6 +11,7 @@ const tools = [
   { name: 'Error Explainer', path: '/tools/error-explainer', icon: Terminal },
   { name: 'README Generator', path: '/tools/readme', icon: FileText },
   { name: 'Commit Message', path: '/tools/commit-msg', icon: GitCommit },
+  { name: 'PR Description', path: '/tools/pr-description', icon: GitPullRequest },
 ];
 
 const LinkedInIcon = ({ size = 16 }: { size?: number }) => (
