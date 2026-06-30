@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Terminal, FileText, GitCommit, ArrowRight, Clock } from 'lucide-react';
+import { Terminal, FileText, GitCommit, GitPullRequest, ArrowRight, Clock } from 'lucide-react';
 
 const sections = [
   {
@@ -22,8 +22,9 @@ const sections = [
     category: '🌿 Git',
     tools: [
       { name: 'Commit Message AI', desc: 'Turn your git diff into 5 perfect commit messages.', path: '/tools/commit-msg', tag: 'git', live: true },
+      { name: 'PR Description Generator', desc: 'Generate clean, reviewer-ready PR descriptions from a diff.', path: '/tools/pr-description', tag: 'git', live: true },
     ],
-    coming: ['PR Description Generator', 'Gitignore Generator'],
+    coming: ['Gitignore Generator'],
   },
   {
     category: '🛠 Utilities',
@@ -36,6 +37,7 @@ const icons: Record<string, React.ElementType> = {
   'Error Explainer': Terminal,
   'README Generator': FileText,
   'Commit Message AI': GitCommit,
+  'PR Description Generator': GitPullRequest,
 };
 
 export default function Home() {
