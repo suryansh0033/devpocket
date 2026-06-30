@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Terminal, FileText, GitCommit, Home, ChevronRight, Menu, X } from 'lucide-react';
+import { SiGithub } from '@icons-pack/react-simple-icons';
 import { useState } from 'react';
 
 const tools = [
@@ -11,6 +12,12 @@ const tools = [
   { name: 'README Generator', path: '/tools/readme', icon: FileText },
   { name: 'Commit Message', path: '/tools/commit-msg', icon: GitCommit },
 ];
+
+const LinkedInIcon = ({ size = 16 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.558V9h3.556v11.452z"/>
+  </svg>
+);
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -89,7 +96,27 @@ export default function Sidebar() {
         color: 'var(--text-muted)',
         fontSize: '11px',
       }}>
-        devpocket.tech
+        <p style={{ marginBottom: '10px' }}>devpocket.tech</p>
+        <div style={{ display: 'flex', gap: '14px' }}>
+          <a
+            href="https://github.com/suryansh0033"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--text-muted)' }}
+            aria-label="GitHub"
+          >
+            <SiGithub size={16} />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/suryansh-manhas-33-dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--text-muted)' }}
+            aria-label="LinkedIn"
+          >
+            <LinkedInIcon size={16} />
+          </a>
+        </div>
       </div>
     </>
   );
@@ -166,7 +193,7 @@ export default function Sidebar() {
         <NavContent />
       </aside>
 
-      <style>{`
+      <style jsx>{`
         @media (max-width: 768px) {
           .sidebar { display: none !important; }
           .mobile-sidebar { display: flex !important; }
