@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { GitCommit, Copy, Check, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { GitCommit, Copy, Check, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function CommitMsg() {
   const [diff, setDiff] = useState('');
@@ -42,6 +43,9 @@ export default function CommitMsg() {
     <div style={{ padding: '48px 40px', maxWidth: '800px' }}>
       {/* Header */}
       <div style={{ marginBottom: '32px' }}>
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', fontSize: '12px', textDecoration: 'none', marginBottom: '16px', width: 'fit-content' }}>
+          <ArrowLeft size={14} /> Back to home
+        </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
           <GitCommit size={20} color="var(--accent)" />
           <p style={{ color: 'var(--accent)', fontSize: '13px', letterSpacing: '2px' }}>GIT TOOL</p>
